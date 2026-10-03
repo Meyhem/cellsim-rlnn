@@ -177,15 +177,16 @@ cellsim/config.py       # Config dataclass: world + PPO + run params; to/from JS
 cellsim/env.py          # BatchedDishEnv(n_envs, cfg, device, seed): reset(), step(actions) -> obs, reward, done, info
 cellsim/model.py        # ActorCritic, RunningNorm
 cellsim/ppo.py          # RolloutBuffer, compute_gae(), ppo_update() — no I/O
-cellsim/recorder.py     # record_episode(model, norm, cfg) -> replay dict; save_replay(path, dict)
+cellsim/storage.py      # atomic writes, replay save/load/list, metrics append/read, artifact paths
+cellsim/recorder.py     # record_episode(model, cfg, epoch) -> replay dict
 cellsim/train.py        # CLI entry: epoch loop, metrics, checkpoints, recording, resume, SIGINT
 cellsim/serve.py        # FastAPI app + CLI
 viewer/index.html, viewer/app.js
-tests/test_env.py, tests/test_ppo.py, tests/test_smoke.py
+tests/test_<module>.py (one per source module)
 runs/                   # output, gitignored
 ```
 
-Boundaries: `env.py` and `ppo.py` do no file I/O; `recorder.py`/`train.py` contain no physics;
+Boundaries: `env.py` and `ppo.py` do no file I/O; `storage.py` owns all artifact file formats; `recorder.py`/`train.py` contain no physics;
 `serve.py` only reads the run directory.
 
 CLI:
@@ -204,7 +205,7 @@ python -m cellsim.serve
   - same seed → identical trajectories
 - `test_ppo.py`: GAE matches a hand-computed 3-step example including a `done` cut;
   one `ppo_update` on a fixed batch reduces the surrogate loss.
-- `test_smoke.py`: 2 epochs with tiny config on CPU in a temp dir → replay, metrics,
+- `test_train.py` / `test_serve.py`: 2 epochs with tiny config on CPU in a temp dir → replay, metrics,
   checkpoint exist and load; `--resume` continues epoch numbering; server endpoints
   respond correctly via FastAPI `TestClient`, including 404s.
 - Manual acceptance: full default run; viewer shows epoch 0 flailing, rising score
