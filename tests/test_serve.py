@@ -46,3 +46,10 @@ def test_replay_list_and_content(client):
 ])
 def test_not_found(client, url):
     assert client.get(url).status_code == 404
+
+
+def test_viewer_index_served(client):
+    res = client.get("/")
+    assert res.status_code == 200
+    assert "CellSim" in res.text
+    assert client.get("/app.js").status_code == 200
