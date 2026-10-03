@@ -1,0 +1,32 @@
+[project]
+name = "cellsim"
+version = "0.1.0"
+description = "Single-cell forager trained with PPO, with a replay viewer"
+requires-python = ">=3.12"
+dependencies = [
+    "torch>=2.7",
+    "numpy>=1.26",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "httpx>=0.27"]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu128" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["cellsim"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
